@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url = env("MONGODB_URI")
+}
+
+enum UserRole {
+  LOAN_OFFICER @map("loan_officer")
+  ADMIN        @map("admin")
+}
+
+enum MaritalStatus {
+  SINGLE    @map("single")
+  MARRIED   @map("married")
+  SEPARATED @map("separated")
+  WIDOWED   @map("widowed")
+}
+
+enum EmploymentType {
+  EMPLOYED      @map("employed")
+  SELF_EMPLOYED @map("self_employed")
+  PENSIONER     @map("pensioner")
+  GOVERNMENT    @map("government")
+  UNEMPLOYED    @map("unemployed")
+  STUDENT       @map("student")
+}
+
+enum EducationLevel {
+  PRIMARY      @map("primary")
+  SECONDARY    @map("secondary")
+  HIGHER       @map("higher")
+  POSTGRADUATE @map("postgraduate")
+}
+
+enum HousingType {
+  OWNS             @map("owns")
+  RENTS            @map("rents")
+  WITH_FAMILY      @map("with_family")
+  COMPANY_PROVIDED @map("company_provided")
+  SOCIAL_HOUSING   @map("social_housing")
+  MUNICIPAL        @map("municipal")
+}
+
+enum ApplicationDecision {
+  APPROVED       @map("approved")
+  REVIEW         @map("review")
+  REJECTED       @map("rejected")
+  PENDING_REVIEW @map("pending_review")
+}
+
+model User {
+  id                     String        @id @default(auto()) @map("_id") @db.ObjectId
+  fullName               String
+  email                  String        @unique
+  passwordHash           String
+  role                   UserRole      @default(LOAN_OFFICER)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  submittedApplications  Application[] @relation("SubmittedApplications")
+  overriddenApplications Application[] @relation("OverriddenApplications")
+
+  @@map("users")
+}
+
+model Application {
+  id                      String              @id @default(auto()) @map("_id") @db.ObjectId
+  submittedById           String              @db.ObjectId
+  applicantName           String
+  dateOfBirth             DateTime
+  maritalStatus           MaritalStatus
+  numChildren             Int
+  employmentType          EmploymentType
+  employmentDurationYears Float
+  educationLevel          EducationLevel
+  annualIncome            Float
+  ownsVehicle             Boolean
+  ownsRealEstate          Boolean
+  housingType             HousingType
+  numFamilyMembers        Float
+  loanAmount              Float
+  loanTermMonths          Int
+  riskScore               Float?
+  decision                ApplicationDecision
+  shapValues              Json
+  adminOverride           Boolean             @default(false)
+  overriddenById          String?             @db.ObjectId
+  overriddenAt            DateTime?
+  createdAt               DateTime            @default(now())
+  submittedBy             User                @relation("SubmittedApplications", fields: [submittedById], references: [id])
+  overriddenBy            User?               @relation("OverriddenApplications", fields: [overriddenById], references: [id])
+
+  @@index([submittedById])
+  @@index([decision])
+  @@index([createdAt])
+  @@map("applications")
+}
