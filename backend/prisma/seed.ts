@@ -18,15 +18,18 @@ const nodeProcess = globalThis as typeof globalThis & {
 };
 
 type SeedUser = {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   passwordHash: string;
   role: UserRole;
 };
 
 function getAdminUser(): SeedUser {
-  const fullName =
-    nodeProcess.process.env.SEED_ADMIN_FULL_NAME?.trim() || "LendIQ Admin User";
+  const firstName =
+    nodeProcess.process.env.SEED_ADMIN_FIRST_NAME?.trim() || "LendIQ";
+  const lastName =
+    nodeProcess.process.env.SEED_ADMIN_LAST_NAME?.trim() || "Admin User";
   const email =
     nodeProcess.process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase() ||
     "admin@lendiq.local";
@@ -35,7 +38,8 @@ function getAdminUser(): SeedUser {
     "$2b$10$zfjf39lP8FMfX4E2nqWpQe7QTYI6F8wNQTa7YfVhzm6DnWf5gWRie";
 
   return {
-    fullName,
+    firstName,
+    lastName,
     email,
     passwordHash,
     role: UserRole.ADMIN,
@@ -56,14 +60,16 @@ async function main() {
   const seedUsers: SeedUser[] = [
     admin,
     {
-      fullName: "Amina Yusuf",
+      firstName: "Amina",
+      lastName: "Yusuf",
       email: "amina.yusuf@lendiq.local",
       passwordHash:
         "$2b$10$5BM7h1AQjbhwR3WIlJkWQOn9fSxH8v.zP5zLdIh1GtxKOdq8Q0fV.",
       role: UserRole.LOAN_OFFICER,
     },
     {
-      fullName: "David Okoro",
+      firstName: "David",
+      lastName: "Okoro",
       email: "david.okoro@lendiq.local",
       passwordHash:
         "$2b$10$QQ9DQlM8ozhoQSGelPGBOepN.aAe6h7wFBQ8b26dQdSvyS7wo/WDW",

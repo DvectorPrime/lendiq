@@ -59,7 +59,8 @@ enum ApplicationDecision {
 
 model User {
   id                     String        @id @default(auto()) @map("_id") @db.ObjectId
-  fullName               String
+  firstName              String
+  lastName               String
   email                  String        @unique
   passwordHash           String
   role                   UserRole      @default(LOAN_OFFICER)
@@ -67,6 +68,7 @@ model User {
   updatedAt              DateTime      @updatedAt
   submittedApplications  Application[] @relation("SubmittedApplications")
   overriddenApplications Application[] @relation("OverriddenApplications")
+  blacklistedTokens      TokenBlacklist[]
 
   @@map("users")
 }
@@ -102,4 +104,17 @@ model Application {
   @@index([decision])
   @@index([createdAt])
   @@map("applications")
+}
+
+model TokenBlacklist {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  jti       String   @unique
+  userId    String   @db.ObjectId
+  revokedAt DateTime @default(now())
+  expiry    DateTime
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([expiry])
+  @@map("token_blacklist")
 }
