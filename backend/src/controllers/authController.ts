@@ -1,6 +1,14 @@
 import { Request, Response } from 'express';
 
-import { authenticateUser, AuthServiceError, registerUser } from '../services/authService.js';
+import {
+  authenticateUser,
+  AUTH_COOKIE_NAME,
+  AuthServiceError,
+  blacklistToken,
+  getAuthCookieOptions,
+  registerUser,
+  type UserProfile,
+} from '../services/authService.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,6 +27,11 @@ type LoginBody = {
 type ValidationResult<T> =
   | { success: true; value: T }
   | { success: false; message: string };
+
+type AuthenticatedRequest = Request & {
+  user?: UserProfile;
+  token?: string;
+};
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -141,6 +154,8 @@ export async function login(req: Request, res: Response) {
   try {
     const result = await authenticateUser(validation.value);
 
+    res.cookie(AUTH_COOKIE_NAME, result.token, getAuthCookieOptions(result.token));
+
     return res.status(200).json({
       success: true,
       message: 'Authenticated successfully',
@@ -153,4 +168,47 @@ export async function login(req: Request, res: Response) {
 
     return res.status(500).json({ success: false, message: 'Failed to authenticate user' });
   }
+}
+
+export async function logout(req: Request, res: Response) {
+  const token = (req as AuthenticatedRequest).token;
+
+  if (!token) {
+    res.clearCookie(AUTH_COOKIE_NAME, getAuthCookieOptions());
+    return res.status(401).json({ success: false, message: 'Authentication token is required' });
+  }
+
+  try {
+    await blacklistToken(token);
+
+    res.clearCookie(AUTH_COOKIE_NAME, getAuthCookieOptions(token));
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+      data: null,
+    });
+  } catch (error) {
+    res.clearCookie(AUTH_COOKIE_NAME, getAuthCookieOptions(token));
+
+    if (error instanceof AuthServiceError) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
+
+    return res.status(500).json({ success: false, message: 'Failed to log out user' });
+  }
+}
+
+export async function me(req: Request, res: Response) {
+  const user = (req as AuthenticatedRequest).user;
+
+  if (!user) {
+    return res.status(401).json({ success: false, message: 'Authentication token is required' });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: 'Authenticated user retrieved successfully',
+    data: user,
+  });
 }
