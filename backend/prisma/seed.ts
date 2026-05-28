@@ -1,4 +1,12 @@
+/**
+ * Database seeding script that populates MongoDB with test data.
+ * Creates 3 users (1 admin, 2 loan officers) and 5 sample loan applications
+ * with varying risk scores, SHAP values for ML explainability, and different approval decisions.
+ * Requires MongoDB to be running and connected. Run with: pnpm prisma:seed or pnpm db:seed
+ */
+
 import "dotenv/config";
+import bcrypt from "bcryptjs";
 import {
   ApplicationDecision,
   EducationLevel,
@@ -25,7 +33,7 @@ type SeedUser = {
   role: UserRole;
 };
 
-function getAdminUser(): SeedUser {
+async function getAdminUser(): Promise<SeedUser> {
   const firstName =
     nodeProcess.process.env.SEED_ADMIN_FIRST_NAME?.trim() || "LendIQ";
   const lastName =
@@ -35,7 +43,7 @@ function getAdminUser(): SeedUser {
     "admin@lendiq.local";
   const passwordHash =
     nodeProcess.process.env.SEED_ADMIN_PASSWORD_HASH?.trim() ||
-    "$2b$10$zfjf39lP8FMfX4E2nqWpQe7QTYI6F8wNQTa7YfVhzm6DnWf5gWRie";
+    await bcrypt.hash("Admin@123", 10);
 
   return {
     firstName,
@@ -55,7 +63,7 @@ async function main() {
     throw new Error(`MongoDB ping failed: ${JSON.stringify(pingResult)}`);
   }
 
-  const admin = getAdminUser();
+  const admin = await getAdminUser();
 
   const seedUsers: SeedUser[] = [
     admin,
@@ -64,7 +72,7 @@ async function main() {
       lastName: "Yusuf",
       email: "amina.yusuf@lendiq.local",
       passwordHash:
-        "$2b$10$5BM7h1AQjbhwR3WIlJkWQOn9fSxH8v.zP5zLdIh1GtxKOdq8Q0fV.",
+        await bcrypt.hash("LoanOfficer@123", 10),
       role: UserRole.LOAN_OFFICER,
     },
     {
@@ -72,7 +80,7 @@ async function main() {
       lastName: "Okoro",
       email: "david.okoro@lendiq.local",
       passwordHash:
-        "$2b$10$QQ9DQlM8ozhoQSGelPGBOepN.aAe6h7wFBQ8b26dQdSvyS7wo/WDW",
+        await bcrypt.hash("LoanOfficer@123", 10),
       role: UserRole.LOAN_OFFICER,
     },
   ];

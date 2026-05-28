@@ -1,6 +1,13 @@
+/**
+ * Auth service containing core authentication business logic.
+ * Handles user registration, login with JWT token generation, password hashing with bcryptjs,
+ * token verification, and token blacklisting for logout functionality.
+ * Manages JWT token creation/verification with jti (unique ID) for revocation support.
+ */
+
 import bcrypt from 'bcryptjs';
 import type { CookieOptions } from 'express';
-import { decode, sign, type JwtPayload, type SignOptions, verify } from 'jsonwebtoken';
+import jwt, { type JwtPayload, type SignOptions } from 'jsonwebtoken';
 import { randomUUID } from 'node:crypto';
 
 import { prisma } from './prisma.js';
@@ -33,11 +40,14 @@ export type UserProfile = {
 
 class AuthServiceError extends Error {
   statusCode: number;
+  // Optional client-safe message that can be returned to callers/users.
+  clientMessage?: string;
 
-  constructor(message: string, statusCode: number) {
+  constructor(message: string, statusCode: number, clientMessage?: string) {
     super(message);
     this.name = 'AuthServiceError';
     this.statusCode = statusCode;
+    if (clientMessage) this.clientMessage = clientMessage;
   }
 }
 
@@ -49,7 +59,12 @@ function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
 
   if (!secret) {
-    throw new AuthServiceError('JWT secret is not configured', 500);
+    // Do not expose internal configuration details to clients. Provide a safe client message.
+    throw new AuthServiceError(
+      'JWT secret is not configured (set JWT_SECRET in backend/.env and restart the server)',
+      500,
+      'Internal server error'
+    );
   }
 
   return secret;
@@ -65,7 +80,7 @@ function isAuthenticatedTokenPayload(payload: string | JwtPayload): payload is A
 }
 
 export function verifyAuthToken(token: string): AuthenticatedTokenPayload {
-  const decoded = verify(token, getJwtSecret());
+  const decoded = jwt.verify(token, getJwtSecret());
 
   if (!isAuthenticatedTokenPayload(decoded)) {
     throw new AuthServiceError('Token is invalid or malformed', 401);
@@ -86,7 +101,7 @@ function toUserProfile(user: {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    role: user.role,
+    role: user.role.toLowerCase(),
   };
 }
 
@@ -94,13 +109,13 @@ export function getAuthCookieOptions(token?: string): CookieOptions {
   const isProduction = process.env.NODE_ENV === 'production';
   const options: CookieOptions = {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'strict',
     secure: isProduction,
     path: '/',
   };
 
   if (token) {
-    const decoded = decode(token);
+    const decoded = jwt.decode(token);
 
     if (decoded && typeof decoded === 'object' && typeof decoded.exp === 'number') {
       options.expires = new Date(decoded.exp * 1000);
@@ -239,7 +254,7 @@ export async function authenticateUser(payload: LoginPayload) {
     jwtid: randomUUID(),
   };
 
-  const token = sign(
+  const token = jwt.sign(
     {
       sub: user.id,
       email: user.email,

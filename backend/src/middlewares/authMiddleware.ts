@@ -1,5 +1,11 @@
+/**
+ * Auth middleware for verifying JWT tokens and protecting routes.
+ * Extracts JWT from Authorization header (Bearer token) or auth_token cookie.
+ * Validates token signature, checks blacklist status, and attaches user profile to req.user.
+ * Also provides a requireAdmin middleware for role-based access control (planned/partial).
+ */
+
 import { type NextFunction, type Request, type Response } from 'express';
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 import {
   AUTH_COOKIE_NAME,
@@ -15,6 +21,10 @@ type AuthenticatedRequest = Request & {
   user?: UserProfile;
   token?: string;
 };
+
+function isErrorWithName(error: unknown, name: string): boolean {
+  return error instanceof Error && error.name === name;
+}
 
 export async function verifyJWT(req: Request, res: Response, next: NextFunction) {
   const token = getRequestToken(req.get('authorization') ?? undefined, req.cookies?.[AUTH_COOKIE_NAME]);
@@ -47,22 +57,28 @@ export async function verifyJWT(req: Request, res: Response, next: NextFunction)
 
     return next();
   } catch (error) {
-    if (error instanceof TokenExpiredError) {
+    if (isErrorWithName(error, 'TokenExpiredError')) {
       return res.status(401).json({ success: false, message: 'Authentication token has expired' });
     }
 
-    if (error instanceof JsonWebTokenError) {
+    if (isErrorWithName(error, 'JsonWebTokenError')) {
       return res.status(401).json({ success: false, message: 'Authentication token is invalid' });
     }
 
     if (error instanceof AuthServiceError) {
+      const clientMessage = (error as AuthServiceError).clientMessage ?? (error.statusCode >= 500 ? 'Internal server error' : error.message);
+      // eslint-disable-next-line no-console
+      console.error('[AuthMiddleware][verifyJWT] Internal error:', error);
+
       if (error.statusCode >= 500) {
-        return res.status(error.statusCode).json({ success: false, message: error.message });
+        return res.status(error.statusCode).json({ success: false, message: clientMessage });
       }
 
-      return res.status(401).json({ success: false, message: error.message });
+      return res.status(401).json({ success: false, message: clientMessage });
     }
 
+    // eslint-disable-next-line no-console
+    console.error('[AuthMiddleware][verifyJWT] Unexpected error:', error);
     return res.status(500).json({ success: false, message: 'Failed to verify authentication token' });
   }
 }

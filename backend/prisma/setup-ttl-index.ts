@@ -1,3 +1,9 @@
+/**
+ * Setup script for MongoDB TTL (Time-To-Live) index on the token_blacklist collection.
+ * Automatically expires blacklisted JWT tokens after their expiry time to clean up expired tokens.
+ * Must run after database initialization: pnpm prisma:setup:ttl
+ */
+
 import "dotenv/config";
 import { PrismaClient } from "../generated/prisma/client.ts";
 

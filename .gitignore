@@ -46,3 +46,6 @@ backend/generated/prisma/
 
 # Local datasets / temporary exports
 LendIQ DataSets/
+
+LendIQ_Figma_Prompts.md
+LendIQ_UI_Design.md

@@ -1,3 +1,9 @@
+/**
+ * Auth controller handling HTTP request/response for authentication endpoints.
+ * Validates request payloads (register, login) and delegates business logic to authService.
+ * Handles error responses and sets authentication cookies on successful login/register.
+ */
+
 import { Request, Response } from 'express';
 
 import {
@@ -11,6 +17,8 @@ import {
 } from '../services/authService.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const NAME_REGEX = /^[\p{L}][\p{L}\p{M}'\-\s.]{0,58}[\p{L}\p{M}]$/u;
 
 type RegisterBody = {
   firstName: string;
@@ -41,6 +49,11 @@ function hasOnlyAllowedFields(body: Record<string, unknown>, allowedFields: stri
   return Object.keys(body).every((key) => allowedFields.includes(key));
 }
 
+function isValidLength(value: string, minLength: number, maxLength: number): boolean {
+  const trimmed = value.trim();
+  return trimmed.length >= minLength && trimmed.length <= maxLength;
+}
+
 function validateRegisterBody(body: unknown): ValidationResult<RegisterBody> {
   if (!isObject(body)) {
     return { success: false, message: 'Request body must be a JSON object' };
@@ -67,12 +80,24 @@ function validateRegisterBody(body: unknown): ValidationResult<RegisterBody> {
     return { success: false, message: 'firstName, lastName, email and password are required' };
   }
 
+  if (!isValidLength(firstName, 2, 60) || !isValidLength(lastName, 2, 60)) {
+    return { success: false, message: 'firstName and lastName must be between 2 and 60 characters long' };
+  }
+
+  if (!NAME_REGEX.test(firstName.trim()) || !NAME_REGEX.test(lastName.trim())) {
+    return { success: false, message: 'firstName and lastName contain invalid characters' };
+  }
+
+  if (email.trim().length > 254) {
+    return { success: false, message: 'Email address is too long' };
+  }
+
   if (!EMAIL_REGEX.test(email.trim())) {
     return { success: false, message: 'Email format is invalid' };
   }
 
-  if (password.length < 8) {
-    return { success: false, message: 'Password must be at least 8 characters long' };
+  if (password.length < 8 || password.length > 128) {
+    return { success: false, message: 'Password must be between 8 and 128 characters long' };
   }
 
   return {
@@ -107,8 +132,16 @@ function validateLoginBody(body: unknown): ValidationResult<LoginBody> {
     return { success: false, message: 'email and password are required' };
   }
 
+  if (email.trim().length > 254) {
+    return { success: false, message: 'Email address is too long' };
+  }
+
   if (!EMAIL_REGEX.test(email.trim())) {
     return { success: false, message: 'Email format is invalid' };
+  }
+
+  if (password.length < 8 || password.length > 128) {
+    return { success: false, message: 'Password must be between 8 and 128 characters long' };
   }
 
   return {
@@ -137,9 +170,15 @@ export async function register(req: Request, res: Response) {
     });
   } catch (error) {
     if (error instanceof AuthServiceError) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
+      const clientMessage = (error as AuthServiceError).clientMessage ?? (error.statusCode >= 500 ? 'Internal server error' : error.message);
+      // Log internal error details for diagnostics
+      // eslint-disable-next-line no-console
+      console.error('[AuthController][register] Internal error:', error);
+      return res.status(error.statusCode).json({ success: false, message: clientMessage });
     }
 
+    // eslint-disable-next-line no-console
+    console.error('[AuthController][register] Unexpected error:', error);
     return res.status(500).json({ success: false, message: 'Failed to register user' });
   }
 }
@@ -163,9 +202,14 @@ export async function login(req: Request, res: Response) {
     });
   } catch (error) {
     if (error instanceof AuthServiceError) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
+      const clientMessage = (error as AuthServiceError).clientMessage ?? (error.statusCode >= 500 ? 'Internal server error' : error.message);
+      // eslint-disable-next-line no-console
+      console.error('[AuthController][login] Internal error:', error);
+      return res.status(error.statusCode).json({ success: false, message: clientMessage });
     }
 
+    // eslint-disable-next-line no-console
+    console.error('[AuthController][login] Unexpected error:', error);
     return res.status(500).json({ success: false, message: 'Failed to authenticate user' });
   }
 }
@@ -192,9 +236,14 @@ export async function logout(req: Request, res: Response) {
     res.clearCookie(AUTH_COOKIE_NAME, getAuthCookieOptions(token));
 
     if (error instanceof AuthServiceError) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
+      const clientMessage = (error as AuthServiceError).clientMessage ?? (error.statusCode >= 500 ? 'Internal server error' : error.message);
+      // eslint-disable-next-line no-console
+      console.error('[AuthController][logout] Internal error:', error);
+      return res.status(error.statusCode).json({ success: false, message: clientMessage });
     }
 
+    // eslint-disable-next-line no-console
+    console.error('[AuthController][logout] Unexpected error:', error);
     return res.status(500).json({ success: false, message: 'Failed to log out user' });
   }
 }

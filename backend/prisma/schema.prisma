@@ -1,3 +1,12 @@
+/**
+ * Prisma schema defining MongoDB data models for the LendIQ lending platform.
+ * Key models:
+ * - User: Stores user accounts (admin, loan officers) with authentication details
+ * - Application: Stores loan applications with applicant demographics, employment info, and ML risk scoring
+ * - TokenBlacklist: Stores revoked JWT tokens with expiry for logout/revocation support
+ * Enums define standard values for roles, employment types, housing types, and application decisions.
+ */
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
