@@ -40,6 +40,7 @@ yarn-error.log*
 **/.venv/
 **/venv/
 **/models/
+**/notebooks/data/
 
 # Generated Prisma client
 backend/generated/prisma/
