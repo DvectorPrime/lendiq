@@ -39,7 +39,6 @@ yarn-error.log*
 **/.ipynb_checkpoints/
 **/.venv/
 **/venv/
-**/models/
 **/notebooks/data/
 
 # Generated Prisma client
@@ -50,3 +49,11 @@ LendIQ DataSets/
 
 LendIQ_Figma_Prompts.md
 LendIQ_UI_Design.md
+
+loan_default_xgb_pipeline.joblib
+train.csv
+
+extract_info.py
+extract_nb.py 
+extracted_cells.txt
+table_output.txt
