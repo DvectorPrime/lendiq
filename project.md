@@ -42,7 +42,9 @@ Frontend — Current Implementation
 
 ML Service
 ----------
-- Prototype Python service exists in `ml-service/` with training scripts and a placeholder scoring endpoint.
+- FastAPI service implemented in `ml-service/app/` to serve the loan prediction model.
+- Integrated SHAP-based explainer to provide risk score probabilities and feature-level contribution explanations on every prediction.
+- Models are loaded into memory during app lifespan initialization for low-latency inference.
 
 Key Files / Paths
 -----------------
@@ -61,10 +63,10 @@ Environment & Runtime Notes
 
 Short-Term Priorities
 ---------------------
-1. Backend: implement application CRUD endpoints and ML scoring integration.
+1. Backend: implement application CRUD endpoints and integrate with the new ML scoring endpoint.
 2. Backend: add standardized API error format and increase test coverage for auth flows.
-3. Frontend: complete application dashboard and integrate ML risk display.
-4. ML service: expose a scoring endpoint and integrate into backend submission flow.
+3. Frontend: complete application dashboard and build visual components for the SHAP risk explanations.
+4. Integrate the ML service properly into the backend submission flow and verify end-to-end communication.
 
 Notes for Maintainers
 ---------------------
@@ -81,3 +83,39 @@ Contact
 -------
 For questions about the current implementation or next steps, open an issue or message the core dev working on auth.
 
+File Tree (Simplified)
+----------------------
+```text
+LendIQ/
+├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma
+│   │   ├── seed.ts
+│   │   └── setup-ttl-index.ts
+│   └── src/
+│       ├── server.ts
+│       ├── controllers/
+│       ├── middlewares/
+│       ├── routes/
+│       └── services/
+├── frontend/
+│   ├── app/
+│   │   ├── (auth)/
+│   │   ├── (dashboard)/
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   └── lib/
+└── ml-service/
+    ├── app/
+    │   ├── main.py
+    │   ├── model.py
+    │   ├── requirements.txt
+    │   └── schemas.py
+    ├── models/
+    │   └── loan_default_xgb_pipeline.joblib
+    └── notebooks/
+        ├── Data Cleaning and EDA.ipynb
+        └── Final Model and SHAP Notebook.ipynb
+```

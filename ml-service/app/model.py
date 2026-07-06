@@ -12,7 +12,7 @@ class LoanPredictionModel:
         """
         if model_path is None:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(current_dir, 'loan_default_xgb_pipeline.joblib')
+            model_path = os.path.join(current_dir, '..', 'models', 'loan_default_xgb_pipeline.joblib')
             
         self.model = joblib.load(model_path)
         
@@ -77,13 +77,15 @@ class LoanPredictionModel:
         df = pd.DataFrame([features])
         return df[self.expected_columns]
 
-    def predict(self, input_data: dict) -> int:
+    def predict(self, input_data: dict) -> dict:
         """
         Maps frontend JSON to features and predicts class (1 for default, 0 for non-default).
+        Also returns the probability of default.
         """
         df = self._prepare_dataframe(input_data)
         prediction = self.model.predict(df)[0]
-        return int(prediction)
+        probability = self.model.predict_proba(df)[0][1]
+        return {"prediction": int(prediction), "probability": float(probability)}
 
     def generateExplainer(self):
         """
