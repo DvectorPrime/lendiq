@@ -63,10 +63,10 @@ Environment & Runtime Notes
 
 Short-Term Priorities
 ---------------------
-1. Backend: implement application CRUD endpoints and integrate with the new ML scoring endpoint.
+1. [DONE] Backend: implement application CRUD endpoints and integrate with the new ML scoring endpoint.
 2. Backend: add standardized API error format and increase test coverage for auth flows.
 3. Frontend: complete application dashboard and build visual components for the SHAP risk explanations.
-4. Integrate the ML service properly into the backend submission flow and verify end-to-end communication.
+4. Verify end-to-end communication from Frontend to ML Service via Backend.
 
 Notes for Maintainers
 ---------------------

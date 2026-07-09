@@ -1,0 +1,210 @@
+--- LendIQ Backend API Test Script ---
+
+[Auth] Attempting to register a test loan officer...
+Registration successful.
+[Auth] Successfully acquired JWT token.
+
+================ VALID REQUESTS ================
+
+--- Test 1: Valid - Standard High Income Single ---
+REQUEST PAYLOAD:
+{
+  "applicantName": "John Doe",
+  "dateOfBirth": "1990-01-01",
+  "maritalStatus": "SINGLE",
+  "numChildren": 0,
+  "employmentType": "EMPLOYED",
+  "employmentDurationYears": 5,
+  "educationLevel": "HIGHER",
+  "annualIncome": 5000000,
+  "ownsVehicle": 1,
+  "ownsRealEstate": 0,
+  "housingType": "RENTS",
+  "numFamilyMembers": 1,
+  "loanAmount": 1000000,
+  "loanTermMonths": 12
+}
+HTTP Status: 201
+RESPONSE BODY:
+{
+  "success": true,
+  "data": {
+    "id": "6a4d26acd9b7d172f97404b4",
+    "submittedById": "6a4d26acd9b7d172f97404b3",
+    "applicantName": "John Doe",
+    "dateOfBirth": "1990-01-01T00:00:00.000Z",
+    "maritalStatus": "SINGLE",
+    "numChildren": 0,
+    "employmentType": "EMPLOYED",
+    "employmentDurationYears": 5,
+    "educationLevel": "HIGHER",
+    "annualIncome": 5000000,
+    "ownsVehicle": true,
+    "ownsRealEstate": false,
+    "housingType": "RENTS",
+    "numFamilyMembers": 1,
+    "loanAmount": 1000000,
+    "loanTermMonths": 12,
+    "riskScore": 33.34015309810638,
+    "decision": "APPROVED",
+    "shapValues": [
+      {
+        "feature": "cat__NAME_EDUCATION_TYPE_Higher education",
+        "value": 1,
+        "shap_value": -0.09199124574661255,
+        "description": "Decreases default risk by 9.2%"
+      },
+      {
+        "feature": "num__CREDIT_INCOME_RATIO",
+        "value": 0.2,
+        "shap_value": -0.03892487287521362,
+        "description": "Decreases default risk by 3.9%"
+      },
+      {
+        "feature": "cat__NAME_EDUCATION_TYPE_Secondary Education",
+        "value": 0,
+        "shap_value": -0.03334397077560425,
+        "description": "Decreases default risk by 3.3%"
+      },
+      {
+        "feature": "num__AMT_CREDIT",
+        "value": 1000000,
+        "shap_value": -0.03268289566040039,
+        "description": "Decreases default risk by 3.3%"
+      },
+      {
+        "feature": "num__AGE_YEARS",
+        "value": 36.53698630136986,
+        "shap_value": 0.02838259935379028,
+        "description": "Increases default risk by 2.8%"
+      },
+      {
+        "feature": "cat__FLAG_OWN_CAR_N",
+        "value": 0,
+        "shap_value": -0.02678504586219788,
+        "description": "Decreases default risk by 2.7%"
+      },
+      {
+        "feature": "cat__NAME_INCOME_TYPE_Working",
+        "value": 1,
+        "shap_value": 0.02072030305862427,
+        "description": "Increases default risk by 2.1%"
+      },
+      {
+        "feature": "num__AMT_INCOME_TOTAL",
+        "value": 5000000,
+        "shap_value": -0.01805472373962402,
+        "description": "Decreases default risk by 1.8%"
+      }
+    ],
+    "adminOverride": false,
+    "overriddenById": null,
+    "overriddenAt": null,
+    "createdAt": "2026-07-07T16:17:48.836Z"
+  }
+}
+
+================ PROBLEMATIC REQUESTS ================
+
+--- Test 1: Invalid - Missing Auth Token ---
+REQUEST PAYLOAD:
+{
+  "applicantName": "John Doe",
+  "dateOfBirth": "1990-01-01",
+  "maritalStatus": "SINGLE",
+  "numChildren": 0,
+  "employmentType": "EMPLOYED",
+  "employmentDurationYears": 5,
+  "educationLevel": "HIGHER",
+  "annualIncome": 5000000,
+  "ownsVehicle": 1,
+  "ownsRealEstate": 0,
+  "housingType": "RENTS",
+  "numFamilyMembers": 1,
+  "loanAmount": 1000000,
+  "loanTermMonths": 12
+}
+HTTP Status: 401
+RESPONSE BODY:
+{
+  "success": false,
+  "message": "Authentication token is required"
+}
+
+--- Test 2: Invalid - Missing Required Fields (annualIncome) ---
+REQUEST PAYLOAD:
+{
+  "applicantName": "John Doe",
+  "dateOfBirth": "1990-01-01",
+  "maritalStatus": "SINGLE",
+  "numChildren": 0,
+  "employmentType": "EMPLOYED",
+  "employmentDurationYears": 5,
+  "educationLevel": "HIGHER",
+  "ownsVehicle": 1,
+  "ownsRealEstate": 0,
+  "housingType": "RENTS",
+  "numFamilyMembers": 1,
+  "loanAmount": 1000000,
+  "loanTermMonths": 12
+}
+HTTP Status: 502
+RESPONSE BODY:
+{
+  "success": false,
+  "message": "Failed to process loan application data.",
+  "errors": [
+    "annualIncome is missing"
+  ]
+}
+
+--- Test 3: Invalid - Wrong Enum Type (maritalStatus: COMPLICATED) ---
+REQUEST PAYLOAD:
+{
+  "applicantName": "John Doe",
+  "dateOfBirth": "1990-01-01",
+  "maritalStatus": "COMPLICATED",
+  "numChildren": 0,
+  "employmentType": "EMPLOYED",
+  "employmentDurationYears": 5,
+  "educationLevel": "HIGHER",
+  "annualIncome": 5000000,
+  "ownsVehicle": 1,
+  "ownsRealEstate": 0,
+  "housingType": "RENTS",
+  "numFamilyMembers": 1,
+  "loanAmount": 1000000,
+  "loanTermMonths": 12
+}
+HTTP Status: 400
+RESPONSE BODY:
+{
+  "success": false,
+  "message": "Invalid field value provided.",
+  "errors": [
+    "One or more fields contain invalid values that do not match the expected format."
+  ]
+}
+
+--- Test 4: Invalid - Empty Payload ---
+REQUEST PAYLOAD:
+{}
+HTTP Status: 502
+RESPONSE BODY:
+{
+  "success": false,
+  "message": "Failed to process loan application data.",
+  "errors": [
+    "dateOfBirth is missing",
+    "annualIncome is missing",
+    "loanAmount is missing",
+    "numChildren is missing",
+    "numFamilyMembers is missing",
+    "ownsVehicle is missing",
+    "ownsRealEstate is missing",
+    "employmentType is missing",
+    "educationLevel is missing",
+    "housingType is missing",
+    "maritalStatus is missing"
+  ]
+}

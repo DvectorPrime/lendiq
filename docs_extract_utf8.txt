@@ -1,0 +1,135 @@
+﻿LendIQ
+Alternative Credit Intelligence Platform
+PROJECT ROADMAP, DATASET GUIDE & STRUCTURE
+Version 1.0  ò  Capstone Project  ò  LendIQ v1
+0. Before You Begin
+The Golden Rule
+Do not move to the next phase until the current phase's deliverables are fully working. A half-built project across 7 phases is worse than a complete project through 3 phases. When you hit a blocker, solve it in the current phase ù don't skip it and hope to come back.
+Time Estimate
+At 5-10 hours per week, LendIQ v1 should take approximately 10-14 weeks to complete. The phases below are designed to fit that pace. Some phases are shorter (1-2 weeks); some are heavier (2-3 weeks). Do not rush Phase 4 (ML Training) ù understanding your model is more important than speed.
+Weekly Work Session Structure
+Suggested structure for each work session:
+First 10 minutes: review what you built last session, re-read relevant SRS requirements
+Build session: focused work on the current phase task
+Last 10 minutes: commit to GitHub with a descriptive commit message, update your personal notes
+1. Dataset Guide
+1.1 Recommended Dataset: Home Credit Default Risk
+Use the Home Credit Default Risk dataset from Kaggle. This is the definitive choice for LendIQ for one reason above all others: it was purpose-built for the exact problem LendIQ is solving. Home Credit Group's stated mission is 'financial inclusion for the unbanked population' ù people with little or no credit history. They use alternative data signals (income, employment, assets, family situation) to predict repayment ability without relying on a credit bureau score. That is word-for-word what LendIQ does.
+The dataset was the subject of a major Kaggle competition with thousands of participants, which means there is an enormous amount of publicly available notebooks, tutorials, and EDA guides you can reference while working through Phase 3.
+1.2 Where to Get It
+Go to: kaggle.com/c/home-credit-default-risk
+You need a free Kaggle account to download. Create one if you don't have one.
+Click the 'Data' tab on the competition page, then download ONLY 'application_train.csv' for v1. Do not download the other files (bureau.csv, previous_application.csv, etc.) ù those are for advanced feature engineering and are out of scope for v1.
+The file is approximately 230MB and contains 307,511 rows.
+1.3 Dataset Overview
+1.4 Feature Mapping: Dataset Column to LendIQ Form Field
+The dataset columns map directly and cleanly to the LendIQ form fields. This is what makes the Home Credit dataset the right choice ù there is no approximation needed. Each form field has a genuine, exact counterpart in the training data.
+1.5 Engineered Features to Create During Training
+Beyond the direct column mappings, create these derived features in your notebook. They are all computable from the same form inputs at inference time, which is what matters.
+credit_to_income_ratio ù AMT_CREDIT / AMT_INCOME_TOTAL. How large is the loan relative to income? A ratio > 5 is a strong risk signal.
+employment_to_age_ratio ù (DAYS_EMPLOYED / DAYS_BIRTH). What fraction of the applicant's life have they been employed? Stable employment relative to age signals reliability.
+family_size_to_income_ratio ù CNT_FAM_MEMBERS / AMT_INCOME_TOTAL. Financial burden per unit of income.
+children_to_family_ratio ù CNT_CHILDREN / CNT_FAM_MEMBERS. Proportion of dependants in the family.
+1.6 Model Training Order
+Train three models in this order. Do not skip to the next until you fully understand the current one:
+Logistic Regression ù your baseline. Read the coefficients. Know which features matter and in which direction. A coefficient's sign tells you if a feature increases or decreases default risk.
+Random Forest ù better accuracy on imbalanced data. Use feature_importances_ to rank your features. This is likely your final deployed model for v1.
+XGBoost (optional for v1) ù attempt it only if Random Forest feels solid. The intuition: it's like Random Forest but trees are built sequentially, each one correcting the errors of the previous one. Use TreeExplainer from SHAP for both Random Forest and XGBoost.
+2. Project File Structure
+2.1 Repository Layout
+Use a monorepo structure ù one GitHub repository with three top-level folders:
+3. Development Phases
+4. Phase Summary and Timeline
+Final Reminder
+LendIQ v1 is complete when: a recruiter can click a live URL, submit a loan application, see a risk score and SHAP chart, and your GitHub README explains what they just experienced in 2 minutes or less. That is the finish line. Everything in this document exists to get you there.
+LendIQ
+Alternative Credit Intelligence Platform
+SOFTWARE REQUIREMENTS SPECIFICATION
+Version 1.0  ò  Capstone Project  ò  LendIQ v1
+1. Introduction
+1.1 Purpose
+This document is the single source of truth for LendIQ v1. It defines what the system must do, how it is structured, what technologies are used, and what constraints apply. Any developer ù including the original author ù should be able to read this and understand the full scope of the project without any prior context.
+1.2 Project Background
+Over 40 million Nigerians are credit-invisible: they have no formal credit history and are excluded from traditional lending. LendIQ addresses this with ML-powered alternative credit scoring using behavioral and financial signals. The system returns a risk score, a loan decision, and a SHAP-based explanation of why that decision was made.
+LendIQ is a capstone project demonstrating proficiency in full-stack development, ML model integration, and modern software architecture patterns used by fintech companies globally.
+1.3 Scope ù What v1 Includes
+User authentication with role-based access (loan officer and admin)
+Multi-step loan application form with client-side validation
+ML-powered credit risk scoring via a dedicated model microservice
+SHAP-based explainability chart on the results page
+Application history dashboard with filtering by status and date
+Admin panel for reviewing all applications and overriding decisions
+1.4 Scope ù What v1 Explicitly Excludes
+Dockerization or cloud deployment (deferred to v2)
+MLflow experiment tracking (deferred to v2)
+Real payment processing or actual loan disbursement
+Mobile native app (web responsive design is sufficient)
+Online model retraining (model is trained once, offline)
+1.5 Key Terms
+2. System Overview
+2.1 Three-Service Architecture
+LendIQ v1 consists of three separate services. They run as independent processes and communicate over HTTP:
+Frontend ù Next.js 14 (App Router). The user-facing web application. Handles all UI, stores the backend-issued JWT in an HTTP-only cookie, manages auth state via Zustand, and multi-step form state via Zustand. Never calls the ML service directly.
+Backend API ù Node.js + Express. The application server. Manages auth, persists data to MongoDB via Prisma ORM, and acts as the orchestrator between the frontend and the ML service.
+ML Service ù Python + FastAPI. A standalone model server. Loads a pre-trained scikit-learn model and returns risk scores and SHAP explanations. Only the backend calls this service; it is not exposed to the internet.
+2.2 Request Lifecycle for a Loan Application
+User completes and submits the 3-step form on the frontend
+Frontend sends POST /api/applications to the backend with all form data
+Backend validates the payload, creates an application record in MongoDB with status 'pending'
+Backend calls POST /predict on the ML Service with the feature data
+ML Service runs inference, computes SHAP values, returns { risk_score, decision, shap_values }
+Backend updates the application record with the prediction result
+Backend returns the full application object (including prediction) to the frontend
+Frontend redirects to the results page showing score, decision badge, and SHAP chart
+2.3 User Roles
+3. Functional Requirements
+3.1 Authentication
+3.2 Loan Application
+3.3 ML Prediction
+3.4 Admin Panel
+4. Data Models
+4.1 User (MongoDB Collection: users)
+4.2 TokenBlacklist (MongoDB Collection: token_blacklist)
+This collection enables instant token revocation without shared state between requests. A TTL index on the expiry field ensures automatic cleanup.
+4.3 Application (MongoDB Collection: applications)
+5. API Contracts
+5.1 Backend REST API
+5.2 ML Service Endpoints (Internal Only)
+6. Technology Stack
+7. Non-Functional Requirements
+7.1 Performance
+ML prediction endpoint must respond within 3 seconds under normal load
+Dashboard list must load within 2 seconds for up to 500 records
+All list endpoints must implement pagination (default: 20 records per page)
+7.2 Security
+Passwords hashed with bcrypt at minimum 10 salt rounds before storage
+JWTs are signed with HS256 and include a unique jti (JWT ID) claim. They expire after 24 hours.
+JWTs are transmitted exclusively via HTTP-only, SameSite=Strict cookies set by the backend. The frontend JavaScript layer never has access to the raw token.
+Every protected route passes through verifyJWT middleware, which checks both the token signature AND whether the jti exists in the token_blacklist collection.
+Admin routes additionally verify role === 'admin' in the JWT payload via requireAdmin middleware.
+On logout, the token jti is immediately written to token_blacklist before the cookie is cleared. This ensures access is revoked even if the cookie is somehow retained.
+A MongoDB TTL index on token_blacklist.expiry handles automatic cleanup of expired blacklist entries.
+ML Service listens on localhost only. It must not be externally accessible.
+All secrets (DB URI, JWT secret, ML service URL) stored in .env files, never committed
+7.3 Code Quality
+Frontend and Backend use TypeScript throughout
+ML Service uses Python type hints and Pydantic models for request/response validation
+Code is modular: each feature area (auth, applications, admin, ML) has its own folder
+.env.example must be committed to document all required environment variables
+7.4 v1 Constraints
+No Docker, no cloud deployment, no CI/CD pipelines required for v1 (deferred to v2)
+Model is trained offline. No online learning or automatic retraining.
+MongoDB Atlas Free Tier is acceptable for development and demo purposes
+All currency values are stored and displayed in Nigerian Naira (NGN)
+8. Assumptions and Open Questions
+8.1 Assumptions
+The ML model is trained once before the application first runs. Retraining is a manual, offline process in a Jupyter notebook.
+The ML Service and Backend API run on the same machine during development (e.g., ML on port 8000, Backend on port 5000, Frontend on port 3000).
+A MongoDB Atlas cluster will be used for the database. A local MongoDB instance is an acceptable substitute.
+8.2 Open Questions to Resolve During Development
+Confirm SHAP explainer type: TreeExplainer for Random Forest/XGBoost, LinearExplainer for Logistic Regression.
+Decide on the final feature subset from Home Credit application_train.csv ù start with 10-15 features before expanding. Recommended starting set: DAYS_BIRTH, AMT_INCOME_TOTAL, AMT_CREDIT, CNT_CHILDREN, CNT_FAM_MEMBERS, FLAG_OWN_CAR, FLAG_OWN_REALTY, NAME_INCOME_TYPE, NAME_EDUCATION_TYPE, NAME_FAMILY_STATUS, NAME_HOUSING_TYPE, DAYS_EMPLOYED.
+Confirm whether annualIncome from the form needs to be scaled to match the AMT_INCOME_TOTAL distribution in the training data before being passed to the model.
+Decide on jti generation strategy: use the uuid library (pnpm add uuid) or crypto.randomUUID() ù both are acceptable for v1.
+Confirm the token_blacklist TTL index is created in the Prisma schema or via a MongoDB Atlas index command. Prisma's MongoDB connector has limited TTL index support ù may need to create this index manually via Atlas UI or a setup script.
+Confirm whether CORS headers are needed on the ML Service or if backend proxying is sufficient to avoid browser exposure.

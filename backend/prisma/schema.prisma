@@ -98,7 +98,7 @@ model Application {
   housingType             HousingType
   numFamilyMembers        Float
   loanAmount              Float
-  loanTermMonths          Int
+  loanTermMonths          Float
   riskScore               Float?
   decision                ApplicationDecision
   shapValues              Json
