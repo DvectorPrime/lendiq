@@ -11,6 +11,7 @@ import cors from 'cors';
 import dotenv from "dotenv";
 
 import authRouter from './routes/authRouter.js';
+import applicationsRouter from './routes/applicationsRouter.js';
 import { requestLogger } from './middlewares/requestLogger.js';
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/applications', applicationsRouter);
 
 function logConfigurationWarnings() {
   if (!process.env.JWT_SECRET || !process.env.JWT_SECRET.trim()) {
