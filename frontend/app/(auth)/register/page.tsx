@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+import { Eye, EyeOff, BarChart3, TrendingUp, Users } from "lucide-react";
 
 import { apiRequest } from "@/lib/api";
 
@@ -49,6 +50,7 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -110,104 +112,213 @@ export default function RegisterPage() {
   }
 
   return (
-    <section className="w-full max-w-md rounded-4xl border border-slate-200/80 bg-white/95 p-6 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] backdrop-blur sm:p-8">
-      <div className="rounded-3xl bg-white px-6 py-2 text-slate-900 sm:px-8 sm:py-4">
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-[0.3em] text-slate-500">LendIQ</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Create your account</h1>
-          <p className="max-w-sm text-sm leading-6 text-slate-600">
-            Register to start using the LendIQ workspace.
-          </p>
+    <div className="flex min-h-screen">
+      {/* ── Left Brand Panel ── */}
+      <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] flex-col justify-between bg-gradient-to-br from-[#1e3a5f] to-[#0f2440] px-10 py-12 text-white relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+
+        <div className="relative z-10 space-y-8">
+          {/* Logo */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#2563EB]">
+              <BarChart3 className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-semibold tracking-tight">LendIQ</span>
+          </div>
+
+          {/* Tagline */}
+          <div className="mt-16 space-y-4">
+            <h1 className="text-3xl font-bold leading-tight tracking-tight xl:text-4xl">
+              Join the platform that&apos;s redefining
+              <span className="text-[#60a5fa]"> credit access.</span>
+            </h1>
+            <p className="max-w-md text-sm leading-relaxed text-blue-100/70">
+              Create your loan officer account and start processing applications with ML-powered risk scoring and transparent, explainable decisions.
+            </p>
+          </div>
         </div>
 
-        {formError ? (
-          <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {formError}
+        {/* Feature highlights */}
+        <div className="relative z-10 space-y-4">
+          <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+            <TrendingUp className="mt-0.5 h-5 w-5 shrink-0 text-[#60a5fa]" />
+            <div>
+              <p className="text-sm font-medium">Alternative Data Scoring</p>
+              <p className="mt-0.5 text-xs text-blue-100/60">Score applicants who lack traditional credit history using employment, assets, and demographic signals.</p>
+            </div>
           </div>
-        ) : null}
-
-        <form className="mt-8 grid gap-4" onSubmit={handleSubmit} noValidate>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-700">First name</span>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="Amina"
-                value={firstName}
-                onChange={(event) => setFirstName(event.target.value)}
-                aria-invalid={Boolean(fieldErrors.firstName)}
-                className={`w-full rounded-2xl border bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 ${fieldErrors.firstName ? 'border-red-400' : 'border-slate-300'}`}
-              />
-              {fieldErrors.firstName ? <p className="text-sm text-red-600">{fieldErrors.firstName}</p> : null}
-            </label>
-
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-700">Last name</span>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Yusuf"
-                value={lastName}
-                onChange={(event) => setLastName(event.target.value)}
-                aria-invalid={Boolean(fieldErrors.lastName)}
-                className={`w-full rounded-2xl border bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 ${fieldErrors.lastName ? 'border-red-400' : 'border-slate-300'}`}
-              />
-              {fieldErrors.lastName ? <p className="text-sm text-red-600">{fieldErrors.lastName}</p> : null}
-            </label>
+          <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+            <Users className="mt-0.5 h-5 w-5 shrink-0 text-[#60a5fa]" />
+            <div>
+              <p className="text-sm font-medium">Financial Inclusion</p>
+              <p className="mt-0.5 text-xs text-blue-100/60">Over 40 million Nigerians are credit-invisible. LendIQ helps bring them into the formal economy.</p>
+            </div>
           </div>
-
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Email</span>
-            <input
-              type="email"
-              name="email"
-              placeholder="you@lendiq.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              aria-invalid={Boolean(fieldErrors.email)}
-              className={`w-full rounded-2xl border bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 ${fieldErrors.email ? 'border-red-400' : 'border-slate-300'}`}
-            />
-            {fieldErrors.email ? <p className="text-sm text-red-600">{fieldErrors.email}</p> : null}
-          </label>
-
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Password</span>
-            <input
-              type="password"
-              name="password"
-              placeholder="Create a strong password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              aria-invalid={Boolean(fieldErrors.password)}
-              className={`w-full rounded-2xl border bg-white px-4 py-3 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 ${fieldErrors.password ? 'border-red-400' : 'border-slate-300'}`}
-            />
-            {fieldErrors.password ? <p className="text-sm text-red-600">{fieldErrors.password}</p> : null}
-          </label>
-
-          <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-            <input type="checkbox" className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-slate-950" />
-            <span>
-              I agree to use this account for LendIQ operations.
-            </span>
-          </label>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {isSubmitting ? 'Creating account...' : 'Create account'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-slate-600">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium text-slate-950 underline decoration-slate-300 underline-offset-4 transition hover:text-slate-700">
-            Sign in
-          </Link>
-        </p>
+        </div>
       </div>
-    </section>
+
+      {/* ── Right Form Panel ── */}
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 sm:px-8 lg:px-12">
+        {/* Mobile logo */}
+        <div className="mb-8 flex items-center gap-3 lg:hidden">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2563EB]">
+            <BarChart3 className="h-4.5 w-4.5 text-white" />
+          </div>
+          <span className="text-lg font-semibold tracking-tight text-gray-900">LendIQ</span>
+        </div>
+
+        <div className="w-full max-w-md animate-slide-up">
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+              Create your account
+            </h1>
+            <p className="text-sm text-gray-500">
+              Register as a loan officer to start processing applications.
+            </p>
+          </div>
+
+          {/* Error banner */}
+          {formError && (
+            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {formError}
+            </div>
+          )}
+
+          {/* Form */}
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
+            {/* Name row */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label htmlFor="reg-firstName" className="block text-sm font-medium text-gray-700">
+                  First name
+                </label>
+                <input
+                  id="reg-firstName"
+                  type="text"
+                  name="firstName"
+                  placeholder="Amina"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.firstName)}
+                  className={`block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
+                    fieldErrors.firstName ? 'border-red-400' : 'border-gray-300'
+                  }`}
+                />
+                {fieldErrors.firstName && (
+                  <p className="text-sm text-red-600">{fieldErrors.firstName}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="reg-lastName" className="block text-sm font-medium text-gray-700">
+                  Last name
+                </label>
+                <input
+                  id="reg-lastName"
+                  type="text"
+                  name="lastName"
+                  placeholder="Yusuf"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.lastName)}
+                  className={`block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
+                    fieldErrors.lastName ? 'border-red-400' : 'border-gray-300'
+                  }`}
+                />
+                {fieldErrors.lastName && (
+                  <p className="text-sm text-red-600">{fieldErrors.lastName}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label htmlFor="reg-email" className="block text-sm font-medium text-gray-700">
+                Work email
+              </label>
+              <input
+                id="reg-email"
+                type="email"
+                name="email"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                aria-invalid={Boolean(fieldErrors.email)}
+                className={`block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
+                  fieldErrors.email ? 'border-red-400' : 'border-gray-300'
+                }`}
+              />
+              {fieldErrors.email && (
+                <p className="text-sm text-red-600">{fieldErrors.email}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label htmlFor="reg-password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="reg-password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  placeholder="Minimum 8 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.password)}
+                  className={`block w-full rounded-lg border bg-white px-3.5 py-2.5 pr-10 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
+                    fieldErrors.password ? 'border-red-400' : 'border-gray-300'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p className="text-sm text-red-600">{fieldErrors.password}</p>
+              )}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex w-full items-center justify-center rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Creating account…
+                </>
+              ) : (
+                'Create account'
+              )}
+            </button>
+          </form>
+
+          {/* Footer link */}
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

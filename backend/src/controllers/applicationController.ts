@@ -79,8 +79,15 @@ export async function getApplications(req: AuthenticatedRequest, res: Response):
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 20;
         const skip = (page - 1) * limit;
+        const search = req.query.search as string;
+
+        const whereClause: any = { submittedById: req.user?.id };
+        if (search) {
+            whereClause.applicantName = { contains: search, mode: 'insensitive' };
+        }
 
         const applications = await prisma.application.findMany({
+            where: whereClause,
             skip,
             take: limit,
             orderBy: { createdAt: 'desc' },
@@ -90,7 +97,9 @@ export async function getApplications(req: AuthenticatedRequest, res: Response):
             }
         });
 
-        const total = await prisma.application.count();
+        const total = await prisma.application.count({
+            where: whereClause
+        });
 
         res.status(200).json({ 
             success: true, 
@@ -119,7 +128,7 @@ export async function getApplicationById(req: AuthenticatedRequest, res: Respons
             }
         });
 
-        if (!application) {
+        if (!application || application.submittedById !== req.user?.id) {
             res.status(404).json({ success: false, message: "Application not found" });
             return;
         }
