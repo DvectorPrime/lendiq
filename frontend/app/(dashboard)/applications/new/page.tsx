@@ -15,6 +15,7 @@ function ApplicationFormContent() {
   const { formData, updateFormData, currentStep, setStep, nextStep, prevStep } = useApplicationForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +25,11 @@ function ApplicationFormContent() {
       return;
     }
 
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    setShowConfirmModal(false);
     setIsSubmitting(true);
     setError(null);
 
@@ -299,6 +305,64 @@ function ApplicationFormContent() {
           </button>
         </div>
       </form>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 animate-fade-in">
+          <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-gray-100 flex-shrink-0">
+              <h2 className="text-xl font-bold text-gray-900">Confirm Application Details</h2>
+              <p className="mt-1 text-sm text-gray-500">Please review the information carefully before submitting.</p>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 border-b pb-2 mb-3">Basic Info</h3>
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex justify-between"><dt className="text-gray-500">Full Name:</dt><dd className="font-medium text-gray-900">{formData.applicantName}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Date of Birth:</dt><dd className="font-medium text-gray-900">{formData.dateOfBirth}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Marital Status:</dt><dd className="font-medium text-gray-900">{formData.maritalStatus}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Children:</dt><dd className="font-medium text-gray-900">{formData.numChildren}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Family Members:</dt><dd className="font-medium text-gray-900">{formData.numFamilyMembers}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Employment Type:</dt><dd className="font-medium text-gray-900">{formData.employmentType}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Employment Duration:</dt><dd className="font-medium text-gray-900">{formData.employmentDurationYears} years</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Education Level:</dt><dd className="font-medium text-gray-900">{formData.educationLevel}</dd></div>
+                  </dl>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 border-b pb-2 mb-3">Financials & Loan</h3>
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex justify-between"><dt className="text-gray-500">Annual Income:</dt><dd className="font-medium text-gray-900">₦{Number(formData.annualIncome).toLocaleString()}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Housing Type:</dt><dd className="font-medium text-gray-900">{formData.housingType}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Owns Vehicle:</dt><dd className="font-medium text-gray-900">{formData.ownsVehicle === "1" ? "Yes" : "No"}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-500">Owns Real Estate:</dt><dd className="font-medium text-gray-900">{formData.ownsRealEstate === "1" ? "Yes" : "No"}</dd></div>
+                    <div className="flex justify-between mt-4 pt-4 border-t"><dt className="text-gray-700 font-semibold">Loan Amount:</dt><dd className="font-bold text-[#2563EB]">₦{Number(formData.loanAmount).toLocaleString()}</dd></div>
+                    <div className="flex justify-between"><dt className="text-gray-700 font-semibold">Loan Term:</dt><dd className="font-bold text-[#2563EB]">{formData.loanTermMonths} months</dd></div>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 flex items-center justify-end space-x-4 bg-gray-50 rounded-b-xl flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                Cancel & Edit
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSubmit}
+                className="rounded-lg bg-[#2563EB] px-6 py-2 text-sm font-semibold text-white hover:bg-[#1D4ED8] transition-colors shadow-sm"
+              >
+                Confirm & Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
