@@ -6,6 +6,7 @@ class PredictionRequest(BaseModel):
     employmentDurationYears: Optional[float] = Field(None, description="Years of employment")
     annualIncome: float = Field(..., gt=0, description="Annual income")
     loanAmount: float = Field(..., gt=0, description="Requested loan amount")
+    loanTermMonths: float = Field(..., gt=0, description="Loan term in months")
     numChildren: int = Field(..., ge=0, description="Number of children")
     numFamilyMembers: float = Field(..., ge=0, description="Number of family members")
     ownsVehicle: bool = Field(..., description="Whether the applicant owns a vehicle")

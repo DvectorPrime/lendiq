@@ -23,13 +23,14 @@ payload = {
     "employmentDurationYears": 5.0,
     "annualIncome": 50000.0,
     "loanAmount": 10000.0,
+    "loanTermMonths": 60.0,
     "numChildren": 2,
     "numFamilyMembers": 4,
     "ownsVehicle": True,
     "ownsRealEstate": True,
     "employmentType": "Working",
-    "educationLevel": "Secondary",
-    "housingType": "House/apartment",
+    "educationLevel": "Secondary Education",
+    "housingType": "House / apartment",
     "maritalStatus": "Married"
 }
 

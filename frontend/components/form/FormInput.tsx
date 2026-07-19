@@ -17,6 +17,7 @@ export function FormInput({ label, error, helperText, className = "", id, ...pro
         className={`block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
           error ? "border-red-400" : "border-gray-300"
         }`}
+        onWheel={(e) => e.currentTarget.blur()}
         {...props}
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
