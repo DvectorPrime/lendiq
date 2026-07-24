@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LendIQ — Alternative Credit Intelligence",
+  title: "LendIQ",
   description:
     "ML-powered credit scoring platform using alternative data for financial inclusion. Score, explain, and decide with confidence.",
 };

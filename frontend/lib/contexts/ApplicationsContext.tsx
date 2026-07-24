@@ -9,7 +9,7 @@ type ApplicationsContextType = {
   meta: PaginationMeta | null;
   isLoading: boolean;
   error: string | null;
-  fetchApplications: (page?: number, limit?: number, search?: string) => Promise<void>;
+  fetchApplications: (page?: number, limit?: number, search?: string, append?: boolean) => Promise<void>;
 };
 
 const ApplicationsContext = createContext<ApplicationsContextType | undefined>(undefined);
@@ -20,7 +20,7 @@ export function ApplicationsProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchApplications = useCallback(async (page = 1, limit = 20, search = "") => {
+  const fetchApplications = useCallback(async (page = 1, limit = 20, search = "", append = false) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -32,7 +32,7 @@ export function ApplicationsProvider({ children }: { children: ReactNode }) {
         throw new Error(payload.message || "Failed to fetch applications");
       }
 
-      setApplications(payload.data);
+      setApplications(prev => append ? [...prev, ...payload.data] : payload.data);
       setMeta(payload.meta || null);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");

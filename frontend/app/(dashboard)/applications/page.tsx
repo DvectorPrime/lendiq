@@ -29,11 +29,13 @@ export default function ApplicationsPage() {
 
   // Fetch applications on mount, page change, or debounced search change
   useEffect(() => {
-    fetchApplications(currentPage, 20, debouncedSearch);
+    fetchApplications(currentPage, 20, debouncedSearch, currentPage > 1);
   }, [fetchApplications, currentPage, debouncedSearch]);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+  const handleLoadMore = () => {
+    if (meta && currentPage < meta.totalPages && !isLoading) {
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
   return (
@@ -82,12 +84,12 @@ export default function ApplicationsPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table & Mobile Cards */}
       <ApplicationTable
         applications={applications}
         meta={meta}
         isLoading={isLoading}
-        onPageChange={handlePageChange}
+        onLoadMore={handleLoadMore}
       />
     </div>
   );

@@ -110,7 +110,7 @@ export default function LoginPage() {
               <span className="text-[#60a5fa]"> not guesswork.</span>
             </h1>
             <p className="max-w-md text-sm leading-relaxed text-blue-100/70">
-              LendIQ uses machine learning to score loan applications using alternative data — giving credit access to the underserved while protecting your institution from risk.
+              LendIQ uses machine learning to score loan applications using alternative data to give credit access to the underserved while protecting your institution from risk.
             </p>
           </div>
         </div>
@@ -120,15 +120,15 @@ export default function LoginPage() {
           <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
             <Shield className="mt-0.5 h-5 w-5 shrink-0 text-[#60a5fa]" />
             <div>
-              <p className="text-sm font-medium">Bank-Grade Security</p>
-              <p className="mt-0.5 text-xs text-blue-100/60">256-bit encryption. HTTP-only auth tokens. Role-based access control.</p>
+              <p className="text-sm font-medium">Secure Authentication</p>
+              <p className="mt-0.5 text-xs text-blue-100/60">Industry-standard bcrypt password hashing and secure, HTTP-only JWT sessions.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
             <FileCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#60a5fa]" />
             <div>
-              <p className="text-sm font-medium">Explainable AI</p>
-              <p className="mt-0.5 text-xs text-blue-100/60">Every decision comes with a SHAP-powered explanation. No black boxes.</p>
+              <p className="text-sm font-medium">Intuitive Risk Insights</p>
+              <p className="mt-0.5 text-xs text-blue-100/60">Clear, human-readable breakdowns of the key factors driving every credit decision.</p>
             </div>
           </div>
         </div>

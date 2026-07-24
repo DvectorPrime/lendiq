@@ -39,11 +39,6 @@ export default function LandingPage() {
 
         <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-20 sm:pt-28">
           <div className="mx-auto max-w-3xl text-center">
-            {/* Badge */}
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1.5 text-xs font-medium text-[#2563EB]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB]" />
-              Alternative Credit Intelligence Platform
-            </div>
 
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
               Credit decisions that are{" "}
@@ -53,8 +48,8 @@ export default function LandingPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-500 sm:text-lg">
-              LendIQ uses machine learning to score loan applications using alternative data —
-              giving credit access to the 40 million+ credit-invisible Nigerians while protecting
+              LendIQ uses machine learning to score loan applications using alternative data to
+              give credit access to the 40 million+ credit-invisible Nigerians while protecting
               your institution from risk.
             </p>
 
@@ -98,7 +93,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Score</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                Our XGBoost model evaluates applicants using 15 alternative data signals — income, employment, assets, and demographics — to produce a calibrated risk probability.
+                Our XGBoost model evaluates applicants using 15 alternative data signals e.g., income, employment, assets, etc., to produce a calibrated risk probability.
               </p>
             </div>
 
@@ -109,7 +104,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Explain</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                Every decision comes with a SHAP-powered breakdown of the top factors that influenced the score. No black boxes — full transparency for officers and applicants.
+                Every decision comes with a SHAP-powered breakdown of the top factors that influenced the score. No black boxes, full transparency for officers and applicants.
               </p>
             </div>
 
@@ -120,7 +115,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Decide</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                Approve, reject, or flag for review — all backed by data. Admins can override any automated decision with a full audit trail preserved.
+                Approve, reject, or flag for review, all backed by data. Make solid decisions you assisted by the insights provided.
               </p>
             </div>
           </div>
@@ -176,7 +171,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Review the Decision</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                The officer sees a risk score, an approval/rejection decision, and a visual SHAP chart explaining exactly why the model made that call.
+                The officer sees a risk score, an approval/rejection decision, and explanations for exactly why the model made that call.
               </p>
             </div>
           </div>
@@ -224,7 +219,7 @@ export default function LandingPage() {
             <span>Built as a capstone project</span>
             <span className="hidden h-3 w-px bg-gray-300 sm:block" />
             <a
-              href="https://github.com"
+              href="https://github.com/DvectorPrime/lendiq"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 transition-colors hover:text-gray-900"

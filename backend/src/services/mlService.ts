@@ -87,8 +87,33 @@ export async function getPrediction(payload: any): Promise<{ riskScore: number; 
     }
 
     const mlData = await mlResponse.json();
+    
+    // Helper to format enum strings like "SELF_EMPLOYED" to "Self Employed"
+    const formatOriginalValue = (val: string) => {
+        if (!val) return "";
+        return val.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    };
+
+    // Map generic ML categories back to the actual user input for intuitive display
+    const shapValues = mlData.shap_values.map((shap: any) => {
+        let featureName = shap.feature;
+        
+        if (featureName.includes("Employment Type: Other") && payload.employmentType) {
+            featureName = featureName.replace("Other", formatOriginalValue(payload.employmentType));
+        }
+        
+        if (featureName.includes("Housing Type: Other_Rented") && payload.housingType) {
+            featureName = featureName.replace("Other_Rented", formatOriginalValue(payload.housingType));
+        }
+
+        return {
+            ...shap,
+            feature: featureName
+        };
+    });
+
     return {
         riskScore: mlData.risk_score,
-        shapValues: mlData.shap_values
+        shapValues: shapValues
     };
 }
