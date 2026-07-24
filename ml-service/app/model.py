@@ -12,7 +12,7 @@ class LoanPredictionModel:
         """
         if model_path is None:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(current_dir, '..', 'models', 'loan_default_xgb_pipeline_v2.joblib')
+            model_path = os.path.join(current_dir, '..', 'models', 'loan_default_xgb_pipeline_v3.joblib')
             
         self.model = joblib.load(model_path)
         
@@ -21,8 +21,9 @@ class LoanPredictionModel:
             'NAME_INCOME_TYPE', 'NAME_EDUCATION_TYPE', 'NAME_HOUSING_TYPE', 
             'NAME_FAMILY_STATUS', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 
             'FLAG_EMP_ANOMALY', 'CNT_CHILDREN', 'AGE_YEARS', 
-            'YEARS_EMPLOYED', 'CREDIT_INCOME_RATIO', 'ADULT_IN_HOUSE',
-            'ANNUITY_MONTHLY_INCOME_RATIO', 'CHILDREN_TO_FAMILY_RATIO'
+            'YEARS_EMPLOYED', 'ADULT_IN_HOUSE', 'EST_LOAN_TERM', 
+            'ANNUITY_MONTHLY_INCOME_RATIO', 'CHILDREN_TO_FAMILY_RATIO', 
+            'CREDIT_INCOME_RATIO'
         ]
         
         # Will hold the SHAP explainer
@@ -62,6 +63,8 @@ class LoanPredictionModel:
         flag_own_car = 'Y' if input_data['ownsVehicle'] == 1 else 'N'
         flag_own_realty = 'Y' if input_data['ownsRealEstate'] == 1 else 'N'
         
+        est_loan_term = int(loan_term_months)
+        
         features = {
             'NAME_INCOME_TYPE': input_data['employmentType'],
             'NAME_EDUCATION_TYPE': input_data['educationLevel'],
@@ -73,10 +76,11 @@ class LoanPredictionModel:
             'CNT_CHILDREN': num_children,
             'AGE_YEARS': age_years,
             'YEARS_EMPLOYED': years_employed,
-            'CREDIT_INCOME_RATIO': credit_income_ratio,
             'ADULT_IN_HOUSE': adult_in_house,
+            'EST_LOAN_TERM': est_loan_term,
             'ANNUITY_MONTHLY_INCOME_RATIO': annuity_monthly_income_ratio,
-            'CHILDREN_TO_FAMILY_RATIO': children_to_family_ratio
+            'CHILDREN_TO_FAMILY_RATIO': children_to_family_ratio,
+            'CREDIT_INCOME_RATIO': credit_income_ratio
         }
         
         df = pd.DataFrame([features])
@@ -124,6 +128,7 @@ class LoanPredictionModel:
             "NAME_EDUCATION_TYPE": "Education Level",
             "NAME_HOUSING_TYPE": "Housing Type",
             "NAME_FAMILY_STATUS": "Marital Status",
+            "EST_LOAN_TERM": "Estimated Loan Term (Months)",
         }
         
         name = mapping.get(base_feat, base_feat)
