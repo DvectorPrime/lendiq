@@ -30,15 +30,15 @@ export async function createApplication(req: AuthenticatedRequest, res: Response
                 submittedById: req.user.id,
                 applicantName: payload.applicantName || "Unknown Applicant",
                 dateOfBirth: new Date(payload.dateOfBirth),
-                maritalStatus: payload.maritalStatus ? payload.maritalStatus.toUpperCase().replace(/\s+/g, '_') as MaritalStatus : undefined,
+                maritalStatus: (payload.maritalStatus as string).toUpperCase().replace(/\s+/g, '_') as MaritalStatus,
                 numChildren: parseInt(payload.numChildren, 10),
-                employmentType: payload.employmentType ? payload.employmentType.toUpperCase().replace(/\s+/g, '_') as EmploymentType : undefined,
+                employmentType: (payload.employmentType as string).toUpperCase().replace(/\s+/g, '_') as EmploymentType,
                 employmentDurationYears: parseFloat(payload.employmentDurationYears || 0),
-                educationLevel: payload.educationLevel ? payload.educationLevel.toUpperCase().replace(/\s+/g, '_') as EducationLevel : undefined,
+                educationLevel: (payload.educationLevel as string).toUpperCase().replace(/\s+/g, '_') as EducationLevel,
                 annualIncome: parseFloat(payload.annualIncome),
                 ownsVehicle: Boolean(payload.ownsVehicle),
                 ownsRealEstate: Boolean(payload.ownsRealEstate),
-                housingType: payload.housingType ? payload.housingType.toUpperCase().replace(/\s+/g, '_') as HousingType : undefined,
+                housingType: (payload.housingType as string).toUpperCase().replace(/\s+/g, '_') as HousingType,
                 numFamilyMembers: parseFloat(payload.numFamilyMembers),
                 loanAmount: parseFloat(payload.loanAmount),
                 loanTermMonths: parseFloat(payload.loanTermMonths || 12),
@@ -119,7 +119,7 @@ export async function getApplications(req: AuthenticatedRequest, res: Response):
 
 export async function getApplicationById(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const application = await prisma.application.findUnique({
             where: { id },
             include: {
@@ -142,7 +142,7 @@ export async function getApplicationById(req: AuthenticatedRequest, res: Respons
 
 export async function overrideApplicationDecision(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const { decision } = req.body;
 
         if (!req.user) {
