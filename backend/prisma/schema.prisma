@@ -44,10 +44,11 @@ enum EmploymentType {
 }
 
 enum EducationLevel {
-  PRIMARY      @map("primary")
-  SECONDARY    @map("secondary")
-  HIGHER       @map("higher")
-  POSTGRADUATE @map("postgraduate")
+  PRIMARY        @map("primary")
+  SECONDARY      @map("secondary")
+  UNDERGRADUATE  @map("undergraduate")
+  HIGHER         @map("higher")
+  POSTGRADUATE   @map("postgraduate")
 }
 
 enum HousingType {

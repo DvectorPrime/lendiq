@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useEffect, useRef, useCallback } from "react";
 import { Application, PaginationMeta } from "@/lib/types";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { DecisionBadge } from "../ui/DecisionBadge";
@@ -11,30 +10,11 @@ export function ApplicationTable({
   applications,
   meta,
   isLoading,
-  onLoadMore,
 }: {
   applications: Application[];
   meta: PaginationMeta | null;
   isLoading: boolean;
-  onLoadMore?: () => void;
 }) {
-  const observer = useRef<IntersectionObserver | null>(null);
-  
-  const lastElementRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (isLoading) return;
-      if (observer.current) observer.current.disconnect();
-      
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && meta && meta.page < meta.totalPages) {
-          if (onLoadMore) onLoadMore();
-        }
-      });
-      
-      if (node) observer.current.observe(node);
-    },
-    [isLoading, meta, onLoadMore]
-  );
 
   if (isLoading && applications.length === 0) {
     return (
@@ -83,10 +63,9 @@ export function ApplicationTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {applications.map((app, index) => {
-              const isLast = index === applications.length - 1;
+            {applications.map((app) => {
               return (
-                <tr key={app.id} className="hover:bg-gray-50 transition-colors" ref={isLast ? lastElementRef : null}>
+                <tr key={app.id} className="hover:bg-gray-50 transition-colors">
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     {app.applicantName}
                   </td>
@@ -122,13 +101,11 @@ export function ApplicationTable({
 
       {/* Mobile Card View */}
       <div className="md:hidden flex flex-col gap-4">
-        {applications.map((app, index) => {
-          const isLast = index === applications.length - 1;
+        {applications.map((app) => {
           return (
             <Link href={`/applications/${app.id}`} key={app.id} className="block">
               <div 
                 className="rounded-xl border border-gray-200 bg-white shadow-sm p-5 hover:shadow-md active:bg-gray-50 transition-all"
-                ref={isLast ? lastElementRef : null}
               >
                 {/* Header Row: Name and Badge */}
                 <div className="flex items-start justify-between mb-4">
@@ -166,19 +143,6 @@ export function ApplicationTable({
         })}
       </div>
 
-      {/* Infinite Scroll Loading Indicator */}
-      {isLoading && applications.length > 0 && (
-        <div className="flex items-center justify-center p-6 bg-transparent">
-          <LoadingSpinner />
-        </div>
-      )}
-      
-      {/* End of list message */}
-      {!isLoading && meta && meta.page >= meta.totalPages && applications.length > 0 && (
-        <div className="p-4 text-center text-xs text-gray-400">
-          End of results
-        </div>
-      )}
     </div>
   );
 }

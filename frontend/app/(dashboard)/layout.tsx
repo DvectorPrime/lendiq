@@ -21,8 +21,8 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
       <ApplicationsProvider>
         <div className="min-h-screen bg-slate-50 lg:flex">
           <DashboardSidebar user={user} />
-          <div className="flex min-h-screen flex-1 flex-col">
-            <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+          <div className="flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden">
+            <main className="flex-1 overflow-x-hidden p-4 sm:p-6 lg:p-8">{children}</main>
           </div>
         </div>
       </ApplicationsProvider>

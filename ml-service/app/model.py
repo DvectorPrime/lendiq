@@ -4,15 +4,30 @@ import numpy as np
 from datetime import datetime
 import os
 import shap
+import requests
+
+from config import settings
+
+MODEL_URL = settings.model_path
+MODEL_FILENAME = "loan_default_xgb_pipeline_v3.joblib"
 
 class LoanPredictionModel:
     def __init__(self, model_path=None):
         """
-        Initializes the model. If no model_path is provided, loads the default pipeline.
+        Initializes the model. Downloads from Hugging Face if no local file exists.
         """
         if model_path is None:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(current_dir, '..', 'models', 'loan_default_xgb_pipeline_v3.joblib')
+            model_path = os.path.join(current_dir, '..', MODEL_FILENAME)
+            
+            # Download from Hugging Face if the model file doesn't exist locally
+            if not os.path.exists(model_path):
+                print(f"Model not found locally. Downloading from Hugging Face...")
+                r = requests.get(MODEL_URL)
+                r.raise_for_status()
+                with open(model_path, "wb") as f:
+                    f.write(r.content)
+                print(f"Model downloaded successfully to {model_path}")
             
         self.model = joblib.load(model_path)
         
@@ -92,6 +107,7 @@ class LoanPredictionModel:
         Also returns the probability of default.
         """
         df = self._prepare_dataframe(input_data)
+        print(df)
         prediction = self.model.predict(df)[0]
         probability = self.model.predict_proba(df)[0][1]
         return {"prediction": int(prediction), "probability": float(probability)}

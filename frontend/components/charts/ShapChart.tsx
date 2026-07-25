@@ -36,11 +36,19 @@ export function ShapChart({ values }: { values: ShapValue[] }) {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 overflow-hidden animate-fade-in">
       {/* Natural Language Summary */}
-      <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4 shadow-sm">
-        <h3 className="text-sm font-semibold text-blue-900 mb-1">AI Risk Assessment Summary</h3>
-        <p className="text-sm text-blue-800 leading-relaxed">{summaryText}</p>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-blue-100 p-4 sm:p-6 shadow-sm">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/40 rounded-full blur-3xl -mr-10 -mt-10"></div>
+        <div className="relative z-10">
+          <h3 className="text-base font-bold text-indigo-900 mb-2 flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </span>
+            AI Risk Assessment Summary
+          </h3>
+          <p className="text-sm text-indigo-800/90 leading-relaxed max-w-3xl">{summaryText}</p>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -58,17 +66,17 @@ export function ShapChart({ values }: { values: ShapValue[] }) {
               {contributors.map((item, idx) => {
                 const impactPercent = (item.shap_value * 100).toFixed(1);
                 return (
-                  <div key={idx} className="group relative flex items-center justify-between rounded-lg border border-red-100 bg-red-50/30 p-3 transition-all hover:bg-red-50/80 hover:shadow-sm">
-                    <div className="flex flex-col overflow-hidden">
-                      <span className="truncate text-sm font-medium text-gray-900" title={item.feature}>
+                  <div key={idx} className="group relative flex flex-row items-center justify-between rounded-xl bg-white border border-gray-100 border-l-4 border-l-rose-500 p-3 sm:p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200">
+                    <div className="flex flex-col flex-1 min-w-0 pr-4">
+                      <span className="truncate text-sm font-bold text-gray-900" title={item.feature}>
                         {item.feature}
                       </span>
-                      <span className="truncate text-xs text-gray-500" title={item.description}>
+                      <span className="truncate text-xs text-gray-500 mt-0.5" title={item.description}>
                         {item.description}
                       </span>
                     </div>
-                    <div className="ml-4 flex shrink-0 items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-bold text-red-700">
-                      <TrendingUp className="h-3 w-3" />
+                    <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 ring-1 ring-inset ring-rose-600/20">
+                      <TrendingUp className="h-3.5 w-3.5" />
                       +{impactPercent}%
                     </div>
                   </div>
@@ -92,17 +100,17 @@ export function ShapChart({ values }: { values: ShapValue[] }) {
               {mitigators.map((item, idx) => {
                 const impactPercent = (Math.abs(item.shap_value) * 100).toFixed(1);
                 return (
-                  <div key={idx} className="group relative flex items-center justify-between rounded-lg border border-green-100 bg-green-50/30 p-3 transition-all hover:bg-green-50/80 hover:shadow-sm">
-                    <div className="flex flex-col overflow-hidden">
-                      <span className="truncate text-sm font-medium text-gray-900" title={item.feature}>
+                  <div key={idx} className="group relative flex flex-row items-center justify-between rounded-xl bg-white border border-gray-100 border-l-4 border-l-emerald-500 p-3 sm:p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200">
+                    <div className="flex flex-col flex-1 min-w-0 pr-4">
+                      <span className="truncate text-sm font-bold text-gray-900" title={item.feature}>
                         {item.feature}
                       </span>
-                      <span className="truncate text-xs text-gray-500" title={item.description}>
+                      <span className="truncate text-xs text-gray-500 mt-0.5" title={item.description}>
                         {item.description}
                       </span>
                     </div>
-                    <div className="ml-4 flex shrink-0 items-center gap-1 rounded-md bg-green-100 px-2 py-1 text-xs font-bold text-green-700">
-                      <TrendingDown className="h-3 w-3" />
+                    <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                      <TrendingDown className="h-3.5 w-3.5" />
                       -{impactPercent}%
                     </div>
                   </div>
