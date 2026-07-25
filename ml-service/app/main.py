@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from config import settings
 from contextlib import asynccontextmanager
 from schemas import PredictionRequest, PredictionResponse, ShapValue
 from model import LoanPredictionModel
@@ -19,6 +21,18 @@ async def lifespan(app: FastAPI):
     ml_model.clear()
 
 app = FastAPI(lifespan=lifespan)
+
+origins = [
+    settings.allowed_origin,
+]  
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/health")
 def health():

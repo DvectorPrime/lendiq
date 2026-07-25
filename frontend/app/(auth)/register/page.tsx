@@ -145,7 +145,7 @@ export default function RegisterPage() {
             <TrendingUp className="mt-0.5 h-5 w-5 shrink-0 text-[#60a5fa]" />
             <div>
               <p className="text-sm font-medium">Alternative Data Scoring</p>
-              <p className="mt-0.5 text-xs text-blue-100/60">Score applicants who lack traditional credit history using employment, assets, and demographic signals.</p>
+              <p className="mt-0.5 text-xs text-blue-100/60">Score applicants who lack traditional credit history using employment, assets, and occupational signals.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">

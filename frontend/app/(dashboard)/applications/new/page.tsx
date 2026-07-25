@@ -187,6 +187,7 @@ function ApplicationFormContent() {
               <option value="">Select level...</option>
               <option value="PRIMARY">Primary Education</option>
               <option value="SECONDARY">Secondary Education</option>
+              <option value="UNDERGRADUATE">Undergraduate</option>
               <option value="HIGHER">Higher Education</option>
               <option value="POSTGRADUATE">Postgraduate</option>
             </FormSelect>

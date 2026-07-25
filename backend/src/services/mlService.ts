@@ -26,6 +26,7 @@ export async function getPrediction(payload: any): Promise<{ riskScore: number; 
     const educationMap: Record<string, string> = {
         'PRIMARY': 'Lower secondary',
         'SECONDARY': 'Secondary Education',
+        'UNDERGRADUATE': 'Incomplete higher',
         'HIGHER': 'Higher education',
         'POSTGRADUATE': 'Higher education'
     };
@@ -87,8 +88,61 @@ export async function getPrediction(payload: any): Promise<{ riskScore: number; 
     }
 
     const mlData = await mlResponse.json();
+    
+    // Helper to format enum strings like "SELF_EMPLOYED" to "Self Employed"
+    const formatOriginalValue = (val: string) => {
+        if (!val) return "";
+        return val.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    };
+
+    // Build a reverse lookup: ML category name → original user-facing label
+    // This maps the Kaggle dataset labels back to the user's actual input values
+    const reverseEmploymentMap: Record<string, string> = {};
+    for (const [key, val] of Object.entries(employmentMap)) {
+        reverseEmploymentMap[val] = formatOriginalValue(key);
+    }
+    const reverseEducationMap: Record<string, string> = {};
+    for (const [key, val] of Object.entries(educationMap)) {
+        reverseEducationMap[val] = formatOriginalValue(key);
+    }
+    const reverseHousingMap: Record<string, string> = {};
+    for (const [key, val] of Object.entries(housingMap)) {
+        reverseHousingMap[val] = formatOriginalValue(key);
+    }
+    const reverseMaritalMap: Record<string, string> = {};
+    for (const [key, val] of Object.entries(maritalMap)) {
+        reverseMaritalMap[val] = formatOriginalValue(key);
+    }
+
+    // Map ML category labels back to the user's original input for intuitive display
+    const shapValues = mlData.shap_values.map((shap: any) => {
+        let featureName = shap.feature;
+        
+        // Match patterns like "Employment Type: Commercial associate" and replace the value part
+        const categoryPatterns = [
+            { prefix: 'Employment Type: ', reverseMap: reverseEmploymentMap, originalKey: payload.employmentType },
+            { prefix: 'Education Level: ', reverseMap: reverseEducationMap, originalKey: payload.educationLevel },
+            { prefix: 'Housing Type: ', reverseMap: reverseHousingMap, originalKey: payload.housingType },
+            { prefix: 'Marital Status: ', reverseMap: reverseMaritalMap, originalKey: payload.maritalStatus },
+        ];
+
+        for (const { prefix, reverseMap, originalKey } of categoryPatterns) {
+            if (featureName.startsWith(prefix) && originalKey) {
+                const mlValue = featureName.substring(prefix.length);
+                if (reverseMap[mlValue]) {
+                    featureName = prefix + formatOriginalValue(originalKey);
+                }
+            }
+        }
+
+        return {
+            ...shap,
+            feature: featureName
+        };
+    });
+
     return {
         riskScore: mlData.risk_score,
-        shapValues: mlData.shap_values
+        shapValues: shapValues
     };
 }
