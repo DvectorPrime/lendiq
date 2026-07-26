@@ -51,7 +51,7 @@ export function ShapChart({ values }: { values: ShapValue[] }) {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1">
         {/* Risk Contributors Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
@@ -66,18 +66,20 @@ export function ShapChart({ values }: { values: ShapValue[] }) {
               {contributors.map((item, idx) => {
                 const impactPercent = (item.shap_value * 100).toFixed(1);
                 return (
-                  <div key={idx} className="group relative flex flex-row items-center justify-between rounded-xl bg-white border border-gray-100 border-l-4 border-l-rose-500 p-3 sm:p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200">
-                    <div className="flex flex-col flex-1 min-w-0 pr-4">
-                      <span className="truncate text-sm font-bold text-gray-900" title={item.feature}>
+                  <div key={idx} className="group relative flex flex-col rounded-xl bg-white border border-gray-100 border-l-4 border-l-rose-500 p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200 gap-2">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-black text-rose-700 ring-1 ring-inset ring-rose-600/20">
+                        <TrendingUp className="h-3.5 w-3.5" />
+                        +{impactPercent}%
+                      </div>
+                    </div>
+                    <div className="flex flex-col min-w-0 w-full">
+                      <span className="text-sm font-bold text-gray-900" title={item.feature}>
                         {item.feature}
                       </span>
-                      <span className="truncate text-xs text-gray-500 mt-0.5" title={item.description}>
+                      <span className="text-xs text-gray-500 mt-1 leading-relaxed" title={item.description}>
                         {item.description}
                       </span>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 ring-1 ring-inset ring-rose-600/20">
-                      <TrendingUp className="h-3.5 w-3.5" />
-                      +{impactPercent}%
                     </div>
                   </div>
                 );
@@ -100,18 +102,20 @@ export function ShapChart({ values }: { values: ShapValue[] }) {
               {mitigators.map((item, idx) => {
                 const impactPercent = (Math.abs(item.shap_value) * 100).toFixed(1);
                 return (
-                  <div key={idx} className="group relative flex flex-row items-center justify-between rounded-xl bg-white border border-gray-100 border-l-4 border-l-emerald-500 p-3 sm:p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200">
-                    <div className="flex flex-col flex-1 min-w-0 pr-4">
-                      <span className="truncate text-sm font-bold text-gray-900" title={item.feature}>
+                  <div key={idx} className="group relative flex flex-col rounded-xl bg-white border border-gray-100 border-l-4 border-l-emerald-500 p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200 gap-2">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                        <TrendingDown className="h-3.5 w-3.5" />
+                        -{impactPercent}%
+                      </div>
+                    </div>
+                    <div className="flex flex-col min-w-0 w-full">
+                      <span className="text-sm font-bold text-gray-900" title={item.feature}>
                         {item.feature}
                       </span>
-                      <span className="truncate text-xs text-gray-500 mt-0.5" title={item.description}>
+                      <span className="text-xs text-gray-500 mt-1 leading-relaxed" title={item.description}>
                         {item.description}
                       </span>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-                      <TrendingDown className="h-3.5 w-3.5" />
-                      -{impactPercent}%
                     </div>
                   </div>
                 );
