@@ -3,6 +3,6 @@
  * Provides database access for MongoDB operations defined in schema.prisma.
  */
 
-import { PrismaClient } from '../../generated/prisma/client.js';
+import { PrismaClient } from '../../generated/prisma/index.js';
 
 export const prisma = new PrismaClient();
