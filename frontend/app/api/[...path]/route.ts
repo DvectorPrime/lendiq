@@ -35,8 +35,10 @@ async function handleRequest(request: NextRequest) {
 
     const responseBody = await response.blob();
     const responseHeaders = new Headers(response.headers);
-    // Remove content-encoding so we don't double-compress or break Vercel's response
+    // Remove headers that conflict with the uncompressed blob or Vercel's edge routing
     responseHeaders.delete('content-encoding');
+    responseHeaders.delete('content-length');
+    responseHeaders.delete('transfer-encoding');
 
     return new NextResponse(responseBody, {
       status: response.status,
