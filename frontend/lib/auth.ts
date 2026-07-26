@@ -12,17 +12,30 @@ export type AuthUser = {
 
 export async function getAuthenticatedUserFromRequest(): Promise<AuthUser | null> {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString();
+  const token = cookieStore.get('auth_token')?.value || cookieStore.toString();
 
-  if (!cookieHeader) {
+  if (!token) {
     return null;
   }
 
   try {
+    const headers: Record<string, string> = {
+      cache: 'no-store',
+    };
+
+    if (token.startsWith('auth_token=')) {
+      headers['cookie'] = token;
+      const extractedToken = token.split('auth_token=')[1]?.split(';')[0];
+      if (extractedToken) {
+        headers['authorization'] = `Bearer ${extractedToken}`;
+      }
+    } else {
+      headers['authorization'] = `Bearer ${token}`;
+      headers['cookie'] = `auth_token=${token}`;
+    }
+
     const response = await fetch(buildApiUrl('/api/auth/me'), {
-      headers: {
-        cookie: cookieHeader,
-      },
+      headers,
       cache: 'no-store',
     });
 
