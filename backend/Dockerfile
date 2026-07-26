@@ -32,5 +32,5 @@ RUN pnpm run build
 # Expose the port (default 5000)
 EXPOSE 5000
 
-# Start the Node server
-CMD ["pnpm", "start"]
+# Start the Node server directly (already built above, skip prestart rebuild)
+CMD ["node", "dist/server.js"]
