@@ -1,7 +1,12 @@
-export const BACKEND_ORIGIN = process.env.NEXT_PUBLIC_BACKEND_ORIGIN || 'http://localhost:5000';
+const rawOrigin = process.env.NEXT_PUBLIC_BACKEND_ORIGIN || '';
+export const BACKEND_ORIGIN = rawOrigin.replace(/\/+$/, '');
 
 export function buildApiUrl(path: string): string {
-  return `${BACKEND_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
+  if (!BACKEND_ORIGIN) {
+    console.error('[API Error] NEXT_PUBLIC_BACKEND_ORIGIN is not defined in environment variables!');
+  }
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${BACKEND_ORIGIN}${normalizedPath}`;
 }
 
 type ApiRequestInit = RequestInit & {
