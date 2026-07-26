@@ -106,11 +106,10 @@ function toUserProfile(user: {
 }
 
 export function getAuthCookieOptions(token?: string): CookieOptions {
-  const isProduction = process.env.NODE_ENV === 'production';
   const options: CookieOptions = {
     httpOnly: true,
-    sameSite: 'strict',
-    secure: isProduction,
+    sameSite: 'none',
+    secure: true,
     path: '/',
   };
 
