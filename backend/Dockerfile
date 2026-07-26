@@ -33,4 +33,4 @@ RUN pnpm run build
 EXPOSE 5000
 
 # Start the Node server directly (already built above, skip prestart rebuild)
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/src/server.js"]
