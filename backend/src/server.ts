@@ -18,11 +18,25 @@ dotenv.config();
 
 
 const app = express();
-const allowedOrigin = process.env.FRONTEND_ORIGIN;
+
+// Trust reverse proxy (Render / Cloudflare) so Express recognizes HTTPS headers for secure cookies
+app.set('trust proxy', 1);
+
+const allowedOrigins = [
+  process.env.FRONTEND_ORIGIN,
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+].filter((o): o is string => Boolean(o));
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   })
 );
