@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../services/prisma.js";
-import { ApplicationDecision, MaritalStatus, EmploymentType, EducationLevel, HousingType } from "../../generated/prisma/enums.js";
+import { ApplicationDecision, MaritalStatus, EmploymentType, EducationLevel, HousingType } from "../../generated/prisma/index.js";
 import { getPrediction, MLServiceError } from "../services/mlService.js";
 
 // Matches authMiddleware's AuthenticatedRequest
