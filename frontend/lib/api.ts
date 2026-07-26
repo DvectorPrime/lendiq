@@ -13,8 +13,6 @@ type ApiRequestInit = RequestInit & {
   json?: unknown;
 };
 
-const PROXIED_AUTH_ROUTES = ['/api/auth/login', '/api/auth/logout', '/api/auth/register'];
-
 export async function apiRequest(path: string, init: ApiRequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);
 
@@ -22,9 +20,9 @@ export async function apiRequest(path: string, init: ApiRequestInit = {}): Promi
     headers.set('Content-Type', 'application/json');
   }
 
-  // If calling proxied auth routes from client, hit local Next.js Route Handler
-  const isProxiedAuth = PROXIED_AUTH_ROUTES.includes(path);
-  const targetUrl = isProxiedAuth ? path : buildApiUrl(path);
+  // Route all client-side requests to the local Next.js API proxy to securely attach HttpOnly cookies
+  const isServer = typeof window === 'undefined';
+  const targetUrl = isServer ? buildApiUrl(path) : path;
 
   return fetch(targetUrl, {
     ...init,
