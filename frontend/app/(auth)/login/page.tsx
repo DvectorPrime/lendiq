@@ -96,12 +96,12 @@ export default function LoginPage() {
 
         <div className="relative z-10 space-y-8">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link href="/" className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#2563EB]">
               <BarChart3 className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-semibold tracking-tight">LendIQ</span>
-          </div>
+          </Link>
 
           {/* Tagline */}
           <div className="mt-16 space-y-4">
@@ -137,12 +137,12 @@ export default function LoginPage() {
       {/* ── Right Form Panel ── */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 sm:px-8 lg:px-12">
         {/* Mobile logo (shown only on small screens) */}
-        <div className="mb-8 flex items-center gap-3 lg:hidden">
+        <Link href="/" className="mb-8 flex items-center gap-3 lg:hidden hover:opacity-80 transition-opacity cursor-pointer">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2563EB]">
             <BarChart3 className="h-4.5 w-4.5 text-white" />
           </div>
           <span className="text-lg font-semibold tracking-tight text-gray-900">LendIQ</span>
-        </div>
+        </Link>
 
         <div className="w-full max-w-md animate-slide-up">
           {/* Header */}
@@ -211,7 +211,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -226,7 +226,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex w-full items-center justify-center rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex w-full cursor-pointer items-center justify-center rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1D4ED8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

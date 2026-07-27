@@ -71,7 +71,7 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
               <p className="text-xs capitalize text-gray-500">{displayRole}</p>
             </div>
           </div>
-          <LogoutButton className="mt-3 flex w-full items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-gray-900" />
+          <LogoutButton className="mt-3 flex w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-gray-900" />
         </div>
       </aside>
 
@@ -145,7 +145,7 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
                     <p className="text-xs capitalize text-gray-500">{displayRole}</p>
                   </div>
                 </div>
-                <LogoutButton className="mt-4 flex w-full items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-gray-900" />
+                <LogoutButton className="mt-4 flex w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-gray-900" />
               </div>
             </div>
           </div>
