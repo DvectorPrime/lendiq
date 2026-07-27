@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { buildApiUrl, BACKEND_ORIGIN } from '@/lib/api';
 
-// ML service health URL — used to pre-warm the service after login
-const ML_SERVICE_HEALTH_URL = process.env.ML_SERVICE_HEALTH_URL || '';
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -40,11 +37,6 @@ export async function POST(request: Request) {
         path: '/',
         maxAge: 60 * 60 * 24, // 24 hours
       });
-
-      // Fire-and-forget: pre-warm the ML service so it's ready when the user submits an application
-      if (ML_SERVICE_HEALTH_URL) {
-        fetch(ML_SERVICE_HEALTH_URL, { signal: AbortSignal.timeout(60_000) }).catch(() => {});
-      }
     }
 
     return NextResponse.json(
