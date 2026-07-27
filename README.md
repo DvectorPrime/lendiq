@@ -27,7 +27,7 @@ Instead of passing absolute values (like raw NGN/USD incomes and loan amounts) d
 - **Annuity-to-Income Ratio**
 - **Years Employed** (derived from age and employment duration)
 
-*Why?* Tree-based algorithms like XGBoost struggle to natively simulate division across features. By engineering these ratios explicitly, the model becomes significantly more robust and generalizes better to varying economic scales and currencies. Explaining that tree-based algorithms struggle to simulate division on their own makes the model much more efficient.
+*Why?* Tree-based algorithms like XGBoost struggle to natively simulate division across features. By engineering these ratios explicitly, the model becomes significantly more robust and generalizes better to varying economic scales and currencies.
 
 ### Model Interpretability with SHAP
 To ensure loan officers understand *why* a decision was made, the ML service integrates SHAP (SHapley Additive exPlanations). 
@@ -43,7 +43,7 @@ Transparency is critical in Machine Learning.
 The raw historical credit dataset used to train this model was heavily skewed (a massive majority of loans were repaid). In such environments, standard "accuracy" metrics are dangerously misleading.
 
 ### Current Model Performance
-The current `v4` iteration of the XGBoost model sits at a **0.672 ROC-AUC score**. While hyperparameter tuning and early stopping were employed, the inherent data imbalance creates an upper ceiling on performance without losing calibration. This reflects a truthful evaluation of the model. You can view the progression of the model's performance across three versions in the `ml-service/notebooks` directory.
+The current `v4` iteration of the XGBoost model sits at a **0.672 ROC-AUC score**. While hyperparameter tuning and early stopping were employed, the inherent data imbalance creates an upper ceiling on performance without losing calibration. You can view the progression of the model's performance across three versions in the `ml-service/notebooks` directory.
 
 ### SHAP Pipeline Constraints
 Integrating SHAP with a standard `scikit-learn` pipeline (`StandardScaler` -> `XGBClassifier`) presents technical hurdles, as SHAP explainers do not natively read through transformation pipelines smoothly. A technical workaround was implemented in the API to manually extract the transformer step, scale the incoming data, and feed the raw numpy arrays directly into the SHAP TreeExplainer.
