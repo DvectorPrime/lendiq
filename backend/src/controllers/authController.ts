@@ -195,6 +195,11 @@ export async function login(req: Request, res: Response) {
 
     res.cookie(AUTH_COOKIE_NAME, result.token, getAuthCookieOptions(result.token));
 
+    // Fire-and-forget: pre-warm the ML service so it's ready when the user submits an application
+    const mlServiceUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000/predict';
+    const mlBaseUrl = mlServiceUrl.replace(/\/predict\/?$/, '');
+    fetch(`${mlBaseUrl}/health`, { signal: AbortSignal.timeout(60_000) }).catch(() => {});
+
     return res.status(200).json({
       success: true,
       message: 'Authenticated successfully',
