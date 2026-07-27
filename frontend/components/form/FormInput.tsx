@@ -41,7 +41,7 @@ export function FormSelect({ label, error, helperText, children, className = "",
       </label>
       <select
         id={id}
-        className={`block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
+        className={`block w-full cursor-pointer rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 ${
           error ? "border-red-400" : "border-gray-300"
         }`}
         {...props}
