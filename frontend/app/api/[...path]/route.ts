@@ -40,8 +40,10 @@ async function handleRequest(request: NextRequest) {
 
     const responseBody = await response.arrayBuffer();
     const responseHeaders = new Headers(response.headers);
-    // Remove headers that conflict with the raw buffer or Vercel's edge routing
+    // Remove headers that conflict with the decompressed buffer
+    // fetch() auto-decompresses gzip, so the original content-length (compressed size) is stale
     responseHeaders.delete('content-encoding');
+    responseHeaders.delete('content-length');
     responseHeaders.delete('transfer-encoding');
 
     return new NextResponse(responseBody, {
