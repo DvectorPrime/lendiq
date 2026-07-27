@@ -37,6 +37,7 @@ export async function getAuthenticatedUserFromRequest(): Promise<AuthUser | null
     const response = await fetch(buildApiUrl('/api/auth/me'), {
       headers,
       cache: 'no-store',
+      signal: AbortSignal.timeout(10_000), // 10s — don't freeze the page if backend is cold
     });
 
     if (!response.ok) {

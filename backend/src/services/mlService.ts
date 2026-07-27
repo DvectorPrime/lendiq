@@ -53,17 +53,43 @@ export async function getPrediction(payload: any): Promise<{ riskScore: number; 
     if (payload.maritalStatus) mlPayload.maritalStatus = maritalMap[payload.maritalStatus.toUpperCase()] || 'Single / not married';
 
     const mlServiceUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000/predict';
+    // Derive the health URL from the predict URL (e.g. https://...onrender.com/health)
+    const mlBaseUrl = mlServiceUrl.replace(/\/predict\/?$/, '');
     
-    let mlResponse;
-    try {
-        mlResponse = await fetch(mlServiceUrl, {
+    const ML_TIMEOUT_MS = 120_000; // 2 minutes — enough for Render cold start + prediction
+
+    async function callML(): Promise<Response> {
+        return fetch(mlServiceUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(mlPayload)
+            body: JSON.stringify(mlPayload),
+            signal: AbortSignal.timeout(ML_TIMEOUT_MS),
         });
-    } catch (e: any) {
-        // Fetch failed entirely (e.g. connection refused, network error)
-        throw new MLServiceError("Credit intelligence service is currently unavailable. Please try again later.", 503);
+    }
+
+    let mlResponse;
+    try {
+        mlResponse = await callML();
+    } catch (firstError: any) {
+        // First attempt failed — likely the Render service is asleep.
+        // Send a wake-up ping to the health endpoint and retry once.
+        console.log('[mlService] First attempt failed, waking ML service...', firstError.message);
+        try {
+            await fetch(`${mlBaseUrl}/health`, { signal: AbortSignal.timeout(ML_TIMEOUT_MS) });
+        } catch {
+            // Health ping itself timed out — service may be completely down
+        }
+
+        // Retry the actual prediction
+        try {
+            mlResponse = await callML();
+        } catch (retryError: any) {
+            console.error('[mlService] Retry also failed:', retryError.message);
+            throw new MLServiceError(
+                "Credit intelligence service is waking up. Please wait a moment and try again.", 
+                503
+            );
+        }
     }
 
     if (!mlResponse.ok) {
